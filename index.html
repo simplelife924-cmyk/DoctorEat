@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>食啥物 · 轉盤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF1D6;--fg:#40513B;--soft:#9DC08B;--main:#609966;--card:#fff;--on:#EDF1D6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d261b;--fg:#EDF1D6;--soft:#609966;--main:#9DC08B;--card:#283424;--on:#1d261b}}
+:root[data-theme="dark"]{--bg:#1d261b;--fg:#EDF1D6;--soft:#609966;--main:#9DC08B;--card:#283424;--on:#1d261b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Noto Sans TC',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+h1{font-size:clamp(28px,6vw,44px);font-weight:900;margin:0 0 4px;text-align:center}
+.sub{margin:0 0 20px;opacity:.7;font-size:14px}
+.wrap{position:relative;width:min(92vw,440px);aspect-ratio:1}
+canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.pin{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:28px solid #d9453b;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.spin{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;border:4px solid var(--bg);background:var(--fg);color:var(--on);font:900 18px 'Noto Sans TC',sans-serif;cursor:pointer;z-index:2}
+.spin:disabled{opacity:.6;cursor:default}
+.spin:focus-visible,.btn:focus-visible{outline:3px solid var(--main);outline-offset:3px}
+.result{margin-top:28px;width:min(92vw,440px);background:var(--card);border-radius:20px;padding:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.result small{opacity:.65;font-size:13px}
+.result h2{margin:6px 0 2px;font-size:clamp(24px,6vw,32px);font-weight:900}
+.row{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;padding:12px;border-radius:14px;border:0;font:700 14px 'Noto Sans TC',sans-serif;cursor:pointer;background:var(--main);color:var(--bg);text-decoration:none;text-align:center}
+.btn.alt{background:transparent;border:2px solid var(--main);color:var(--fg)}
+.btn[hidden]{display:none}
+.list{margin-top:20px;width:min(92vw,440px);background:var(--card);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.bar input[type=search]{flex:1;min-width:0;padding:9px 12px;border-radius:12px;border:2px solid var(--soft);background:var(--bg);color:var(--fg);font:700 14px 'Noto Sans TC',sans-serif}
+.bar button{padding:9px 12px;border-radius:12px;border:2px solid var(--main);background:transparent;color:var(--fg);font:700 13px 'Noto Sans TC',sans-serif;cursor:pointer}
+.items{max-height:340px;overflow-y:auto;display:grid;gap:6px}
+.items label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--bg);cursor:pointer;font-size:14px;font-weight:700}
+.items label.off{opacity:.45}
+.items input{accent-color:var(--main);width:18px;height:18px;flex:none}
+.items .t{margin-left:auto;font-size:12px;font-weight:400;opacity:.65;white-space:nowrap}
+.items input.nm{width:auto;height:auto;flex:1;min-width:0;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--fg);font:700 14px 'Noto Sans TC',sans-serif;padding:2px 0}
+.items input.nm:focus{outline:0;border-bottom-color:var(--main)}
+.items .del{border:0;background:transparent;color:var(--fg);opacity:.55;font-size:18px;cursor:pointer;padding:0 4px;line-height:1}
+.items .del:hover{opacity:1;color:#d9453b}
+.add{display:flex;gap:8px;margin-bottom:12px}
+.add input{flex:1;min-width:0;padding:9px 12px;border-radius:12px;border:2px solid var(--soft);background:var(--bg);color:var(--fg);font:700 14px 'Noto Sans TC',sans-serif}
+.add button{padding:9px 14px;border-radius:12px;border:0;background:var(--main);color:var(--bg);font:700 13px 'Noto Sans TC',sans-serif;cursor:pointer}
+.reset{margin-top:12px;width:100%;padding:9px;border-radius:12px;border:2px solid var(--soft);background:transparent;color:var(--fg);font:700 13px 'Noto Sans TC',sans-serif;cursor:pointer}
+.count{font-size:13px;margin:0 0 10px;opacity:.8}
+</style>
+</head>
+<body>
+<h1>今天吃什麼?</h1>
+<p class="sub">共 <span id="count">42</span> 家餐廳</p>
+
+<div class="wrap">
+  <div class="pin"></div>
+  <canvas id="wheel" width="800" height="800"></canvas>
+  <button class="spin" id="spinBtn">SPIN</button>
+</div>
+
+<div class="result">
+  <small id="meta">按下 SPIN 開始抽籤</small>
+  <h2 id="name">?</h2>
+  <div class="row">
+    <button class="btn alt" id="again">再轉一次</button>
+    <a class="btn" id="map" href="#" target="_blank" rel="noopener" hidden>地圖導航</a>
+  </div>
+</div>
+
+<section class="list">
+  <p class="count">已勾選 <b id="active">42</b> / <span id="total">42</span> 家</p>
+  <div class="bar">
+    <input type="search" id="q" placeholder="搜尋名稱或類別">
+    <button id="all">全選</button>
+    <button id="none">全不選</button>
+  </div>
+  <div class="add">
+    <input type="text" id="newName" placeholder="新增餐廳名稱" maxlength="40">
+    <button id="add">新增</button>
+  </div>
+  <div class="items" id="items"></div>
+  <button class="reset" id="reset">還原預設名單</button>
+</section>
+
+<script>
+const RESTAURANTS=[
+["So點子健康餐盒","健康餐",140],["黑盒子蛋包飯專賣店","日式丼飯",120],["嗆司餐盒","便當類",110],["418雞飯","台式便當",100],
+["七味廚坊","家常便當",110],["一米粒","健康餐",130],["203丼飯咖哩飯","日式咖哩",130],["九州日式豚骨拉麵","拉麵麵食",160],
+["A-WEI小義麵","義式料理",150],["悠油YUYU MENU","健康餐",140],["八方一號","鍋貼水餃",90],["八廚職人弁當","高級便當",150],
+["快捷妥當","快餐便當",100],["大逢甲小辣椒","川味辣食",120],["大彰爌肉飯","爌肉飯",110],["不惑小廚","家常快炒",130],
+["丼飯專賣店(中工店)","日式丼飯",130],["香噴噴雞肉飯","台式小吃",85],["四平烤肉飯","烤肉便當",120],["高樂弁當屋(調漲後)","日式便當",140],
+["香港吉仕貳館","港式燒臘",140],["吉野烤肉飯","烤肉飯",115],["好蛋糧心事業","早午餐/餐盒",135],["西屯老王便當店","傳統便當",105],
+["佳蒂越南美食","異國越式",120],["承泰小吃","台式小吃",90],["炒飯英雄","炒飯炒麵",100],["阿珠便當","傳統便當",95],
+["後山飯","池上便當",110],["津品園","家常菜館",125],["食為大港式燒臘西屯總店","港式燒臘",130],["奔跑便便當專賣店逢甲店","創意便當",115],
+["家常便當土魠魚羹","傳統羮湯",100],["悟饕池上飯包台中長安店","池上便當",110],["LAWA海苔飯捲","韓式/飯捲",85],["鹿港洪爌肉飯","爌肉飯",115],
+["麥子料理","家常快炒",130],["彭記鵝肉大王","鵝肉小吃",160],["超吉大盛台中青海店","日式燒肉蓋飯",145],["成大器烤肉飯","烤肉便當",125],
+["約翰煮的","創意餐盒",130],["A米炊飯","台式炊飯",110]
+].map(([name,tag,budget])=>({name,tag,budget}));
+
+const canvas=document.getElementById('wheel'),ctx=canvas.getContext('2d');
+const COLORS=["#40513B","#609966","#9DC08B","#32432D","#518256"];
+let rot=0,spinning=false,current=null,pool=[],data=[];
+const KEY='wheel_data';
+const defaults=()=>RESTAURANTS.map(r=>({...r,on:true}));
+try{const d=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(d))data=d}catch(e){}
+if(!data.length&&!localStorage.getItem(KEY))data=defaults();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+function refresh(){
+  pool=data.filter(r=>r.on);
+  document.getElementById('active').textContent=pool.length;
+  document.getElementById('total').textContent=data.length;
+  document.getElementById('count').textContent=pool.length;
+  document.getElementById('spinBtn').disabled=spinning||!pool.length;
+  document.getElementById('again').disabled=!pool.length;
+  draw();
+}
+function applyFilter(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  document.querySelectorAll('.items label').forEach(l=>l.style.display=l.dataset.search.includes(q)?'':'none');
+}
+function buildList(){
+  const box=document.getElementById('items');box.textContent='';
+  data.forEach(r=>{
+    const l=document.createElement('label');l.dataset.search=(r.name+r.tag).toLowerCase();l.classList.toggle('off',!r.on);
+    const cb=document.createElement('input');cb.type='checkbox';cb.checked=r.on;
+    cb.addEventListener('change',()=>{r.on=cb.checked;l.classList.toggle('off',!r.on);save();refresh()});
+    const n=document.createElement('input');n.type='text';n.className='nm';n.value=r.name;n.maxLength=40;n.setAttribute('aria-label','餐廳名稱');
+    n.addEventListener('click',e=>e.preventDefault());
+    n.addEventListener('change',()=>{const v=n.value.trim();if(!v){n.value=r.name;return}r.name=v;n.value=v;l.dataset.search=(v+r.tag).toLowerCase();save();refresh()});
+    const t=document.createElement('span');t.className='t';t.textContent=r.tag;
+    const d=document.createElement('button');d.className='del';d.textContent='×';d.title='刪除';d.setAttribute('aria-label','刪除 '+r.name);
+    d.addEventListener('click',e=>{e.preventDefault();data=data.filter(x=>x!==r);save();buildList();refresh()});
+    l.append(cb,n,t,d);box.appendChild(l);
+  });
+  applyFilter();
+}
+function setAll(on){data.forEach(r=>r.on=on);save();buildList();refresh()}
+function addRestaurant(){
+  const i=document.getElementById('newName'),v=i.value.trim();
+  if(!v){i.focus();return}
+  data.unshift({name:v,tag:'自訂',budget:0,on:true});i.value='';save();buildList();refresh();
+}
+
+function draw(){
+  const n=pool.length,c=canvas.width/2,r=c-20,s=2*Math.PI/Math.max(n,1);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!n){ctx.beginPath();ctx.arc(c,c,r,0,2*Math.PI);ctx.fillStyle="#9DC08B";ctx.fill();ctx.fillStyle="#283424";ctx.textAlign="center";ctx.font="bold 34px 'Noto Sans TC',sans-serif";ctx.fillText("請至少勾選一家餐廳",c,c+60);return}
+  for(let i=0;i<n;i++){
+    const a=rot+i*s;
+    ctx.beginPath();ctx.moveTo(c,c);ctx.arc(c,c,r,a,a+s);ctx.closePath();
+    ctx.fillStyle=(i===n-1&&n%COLORS.length===1)?COLORS[3]:COLORS[i%COLORS.length];
+    ctx.fill();ctx.strokeStyle="#EDF1D6";ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(c,c);ctx.rotate(a+s/2);
+    ctx.textAlign="right";ctx.fillStyle=(i%COLORS.length===2)?"#283424":"#EDF1D6";
+    ctx.font="bold 22px 'Noto Sans TC',sans-serif";
+    let t=pool[i].name;if(t.length>9)t=t.slice(0,8)+"…";
+    ctx.fillText(t,r-30,8);ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(c,c,r,0,2*Math.PI);ctx.strokeStyle="#40513B";ctx.lineWidth=12;ctx.stroke();
+}
+
+function spin(){
+  if(spinning||!pool.length)return;
+  spinning=true;
+  const btn=document.getElementById('spinBtn');btn.disabled=true;
+  const snap=pool.slice(),n=snap.length,s=2*Math.PI/n,idx=Math.floor(Math.random()*n);
+  const target=1.5*Math.PI-(idx*s+s/2)+(5+Math.floor(Math.random()*3))*2*Math.PI;
+  const start=rot%(2*Math.PI),t0=performance.now(),dur=4000;
+  document.getElementById('name').textContent="轉動中…";
+  document.getElementById('meta').textContent="命運正在決定";
+  document.getElementById('map').hidden=true;
+  (function step(now){
+    const p=Math.min((now-t0)/dur,1);
+    rot=start+(target-start)*(1-Math.pow(1-p,3));
+    draw();
+    if(p<1)requestAnimationFrame(step);
+    else{
+      spinning=false;btn.disabled=!pool.length;current=snap[idx];
+      document.getElementById('name').textContent=current.name;
+      document.getElementById('meta').textContent=current.tag+(current.budget?" · 約 $"+current.budget:"");
+      const m=document.getElementById('map');
+      m.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(current.name);
+      m.hidden=false;
+    }
+  })(t0);
+}
+
+document.getElementById('spinBtn').addEventListener('click',spin);
+document.getElementById('again').addEventListener('click',spin);
+document.getElementById('all').addEventListener('click',()=>setAll(true));
+document.getElementById('none').addEventListener('click',()=>setAll(false));
+document.getElementById('q').addEventListener('input',applyFilter);
+document.getElementById('add').addEventListener('click',addRestaurant);
+document.getElementById('newName').addEventListener('keydown',e=>{if(e.key==='Enter')addRestaurant()});
+document.getElementById('reset').addEventListener('click',()=>{if(confirm('還原成預設的 42 家餐廳?目前的修改會被清除。')){data=defaults();save();buildList();refresh()}});
+buildList();refresh();
+</script>
+</body>
+</html>
