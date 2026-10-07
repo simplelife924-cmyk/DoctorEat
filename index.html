@@ -51,7 +51,7 @@ canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 12px 32px rgba(0,0,
 </head>
 <body>
 <h1>今天吃什麼?</h1>
-<p class="sub">共 <span id="count">42</span> 家餐廳</p>
+<p class="sub">共 <span id="count">41</span> 家餐廳</p>
 
 <div class="wrap">
   <div class="pin"></div>
@@ -60,18 +60,18 @@ canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 12px 32px rgba(0,0,
 </div>
 
 <div class="result">
-  <small id="meta">按下 SPIN 開始通靈</small>
+  <small id="meta">按下通靈</small>
   <h2 id="name">?</h2>
   <div class="row">
-    <button class="btn alt" id="again">蛤這間喔再轉一次好了</button>
+    <button class="btn alt" id="again">蛤這間喔？再轉一次好了</button>
     <a class="btn" id="map" href="#" target="_blank" rel="noopener" hidden>地圖導航</a>
   </div>
 </div>
 
 <section class="list">
-  <p class="count">已勾選 <b id="active">42</b> / <span id="total">42</span> 家</p>
+  <p class="count">已勾選 <b id="active">41</b> / <span id="total">41</span> 家</p>
   <div class="bar">
-    <input type="search" id="q" placeholder="搜尋名稱或類別">
+    <input type="search" id="q" placeholder="搜尋名稱">
     <button id="all">全選</button>
     <button id="none">全不選</button>
   </div>
@@ -85,18 +85,18 @@ canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 12px 32px rgba(0,0,
 
 <script>
 const RESTAURANTS=[
-["So點子健康餐盒","健康餐",140],["黑盒子蛋包飯專賣店","日式丼飯",120],["嗆司餐盒","便當類",110],["418雞飯","台式便當",100],
-["七味廚坊","家常便當",110],["一米粒","健康餐",130],["203丼飯咖哩飯","日式咖哩",130],["九州日式豚骨拉麵","拉麵麵食",160],
-["A-WEI小義麵","義式料理",150],["悠油YUYU MENU","健康餐",140],["八方一號","鍋貼水餃",90],["八廚職人弁當","高級便當",150],
-["快捷妥當","快餐便當",100],["大逢甲小辣椒","川味辣食",120],["大彰爌肉飯","爌肉飯",110],["不惑小廚","家常快炒",130],
-["丼飯專賣店(中工店)","日式丼飯",130],["香噴噴雞肉飯","台式小吃",85],["四平烤肉飯","烤肉便當",120],["高樂弁當屋(調漲後)","日式便當",140],
-["香港吉仕貳館","港式燒臘",140],["吉野烤肉飯","烤肉飯",115],["好蛋糧心事業","早午餐/餐盒",135],["西屯老王便當店","傳統便當",105],
-["佳蒂越南美食","異國越式",120],["承泰小吃","台式小吃",90],["炒飯英雄","炒飯炒麵",100],["阿珠便當","傳統便當",95],
-["後山飯","池上便當",110],["津品園","家常菜館",125],["食為大港式燒臘西屯總店","港式燒臘",130],["奔跑便便當專賣店逢甲店","創意便當",115],
-["家常便當土魠魚羹","傳統羮湯",100],["悟饕池上飯包台中長安店","池上便當",110],["LAWA海苔飯捲","韓式/飯捲",85],["鹿港洪爌肉飯","爌肉飯",115],
-["麥子料理","家常快炒",130],["彭記鵝肉大王","鵝肉小吃",160],["超吉大盛台中青海店","日式燒肉蓋飯",145],["成大器烤肉飯","烤肉便當",125],
-["約翰煮的","創意餐盒",130],["A米炊飯","台式炊飯",110]
-].map(([name,tag,budget])=>({name,tag,budget}));
+["So點子健康餐盒",140],["黑盒子蛋包飯專賣店",120],["嗆司餐盒",110],["418雞飯",100],
+["七味廚坊",110],["一米粒",130],["203丼飯咖哩飯",130],["九州日式豚骨拉麵",160],
+["A-WEI小義麵",150],["悠油YUYU MENU",140],["八方一號",90],["八廚職人弁當",150],
+["快捷妥當",100],["大逢甲小辣椒",120],["大彰爌肉飯",110],["不惑小廚",130],
+["丼飯專賣店(中工店)",130],["香噴噴雞肉飯",85],["四平烤肉飯",120],["高樂弁當屋",140],
+["香港吉仕貳館",140],["吉野烤肉飯",115],["好蛋糧心事業",135],["西屯老王便當店",105],
+["佳蒂越南美食",120],["承泰小吃",90],["炒飯英雄",100],["阿珠便當",95],
+["後山飯",110],["津品園",125],["食為大港式燒臘西屯總店",130],["奔跑便便當專賣店逢甲店",115],
+["家常便當土魠魚羹",100],["悟饕池上飯包台中長安店",110],["LAWA海苔飯捲",85],["鹿港洪爌肉飯",115],
+["麥子料理",130],["彭記鵝肉大王",160],["超吉大盛台中青海店",145],["成大器烤肉飯",125],
+["約翰煮的",130]
+].map(([name,budget])=>({name,tag:"",budget}));
 
 const canvas=document.getElementById('wheel'),ctx=canvas.getContext('2d');
 const COLORS=["#40513B","#609966","#9DC08B","#32432D","#518256"];
@@ -128,7 +128,7 @@ function buildList(){
     const n=document.createElement('input');n.type='text';n.className='nm';n.value=r.name;n.maxLength=40;n.setAttribute('aria-label','餐廳名稱');
     n.addEventListener('click',e=>e.preventDefault());
     n.addEventListener('change',()=>{const v=n.value.trim();if(!v){n.value=r.name;return}r.name=v;n.value=v;l.dataset.search=(v+r.tag).toLowerCase();save();refresh()});
-    const t=document.createElement('span');t.className='t';t.textContent=r.tag;
+    const t=document.createElement('span');t.className='t';t.textContent=r.tag||'';
     const d=document.createElement('button');d.className='del';d.textContent='×';d.title='刪除';d.setAttribute('aria-label','刪除 '+r.name);
     d.addEventListener('click',e=>{e.preventDefault();data=data.filter(x=>x!==r);save();buildList();refresh()});
     l.append(cb,n,t,d);box.appendChild(l);
@@ -168,7 +168,7 @@ function spin(){
   const target=1.5*Math.PI-(idx*s+s/2)+(5+Math.floor(Math.random()*3))*2*Math.PI;
   const start=rot%(2*Math.PI),t0=performance.now(),dur=4000;
   document.getElementById('name').textContent="轉動中…";
-  document.getElementById('meta').textContent="命運正在決定";
+  document.getElementById('meta').textContent="正在通靈";
   document.getElementById('map').hidden=true;
   (function step(now){
     const p=Math.min((now-t0)/dur,1);
@@ -178,7 +178,7 @@ function spin(){
     else{
       spinning=false;btn.disabled=!pool.length;current=snap[idx];
       document.getElementById('name').textContent=current.name;
-      document.getElementById('meta').textContent=current.tag+(current.budget?" · 約 $"+current.budget:"");
+      document.getElementById('meta').textContent=[current.tag,current.budget?"約 $"+current.budget:""].filter(Boolean).join(" · ")||"就是這間";
       const m=document.getElementById('map');
       m.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(current.name);
       m.hidden=false;
@@ -193,7 +193,7 @@ document.getElementById('none').addEventListener('click',()=>setAll(false));
 document.getElementById('q').addEventListener('input',applyFilter);
 document.getElementById('add').addEventListener('click',addRestaurant);
 document.getElementById('newName').addEventListener('keydown',e=>{if(e.key==='Enter')addRestaurant()});
-document.getElementById('reset').addEventListener('click',()=>{if(confirm('還原成預設的 42 家餐廳?目前的修改會被清除。')){data=defaults();save();buildList();refresh()}});
+document.getElementById('reset').addEventListener('click',()=>{if(confirm('還原成預設的 41 家餐廳?目前的修改會被清除。')){data=defaults();save();buildList();refresh()}});
 buildList();refresh();
 </script>
 </body>
